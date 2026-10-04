@@ -1,35 +1,32 @@
-# Production Level Todo
+# Production Todo Platform ⚡
 
-A high-performance Todo service built with Go and PostgreSQL.
+A high-performance, battle-tested Go backend paired with a real-time client, engineered with production PostgreSQL standards.
 
-## Features
+---
 
-- PostgreSQL with `BIGINT GENERATED ALWAYS AS IDENTITY` primary keys
-- Database migrations with Goose
-- Connection pooling via `DB_STRING`
-- Modular architecture with clean separation of concerns (`app/db`, `app/routes`)
+### Core Architecture
 
-## Getting Started
+- **PostgreSQL & `pgxpool`**: High-concurrency connection pooling with health monitoring.
+- **Relational Integrity**: `BIGINT GENERATED ALWAYS AS IDENTITY` primary keys with `ON DELETE SET NULL` cascade protection.
+- **Argon2id Cryptography**: Dynamic memory/time/thread parameter parsing with constant-time verification.
+- **JWT Cookie Authentication**: HTTP-only, SameSite device sessions with cryptographic signature verification.
+- **Production HTTP Server**: Hardened with strict read, write, idle, and header timeouts.
+- **Goose Migrations**: Versioned database schema evolution.
+- **Built-in Client & API Inspector**: Real-time dark mode dashboard for testing and monitoring.
 
-### Prerequisites
+---
 
-- Go 1.25+
-- PostgreSQL
-- Goose CLI (`go install github.com/pressly/goose/v3/cmd/goose@latest`)
+### Quick Start
 
-### Setup
+```bash
+# 1. Environment
+cp .env.example .env
 
-1. Copy `.env.example` to `.env` and fill in your PostgreSQL connection string:
-   ```bash
-   cp .env.example .env
-   ```
+# 2. Database Migrations
+goose -dir migration postgres "$DB_STRING" up
 
-2. Run database migrations:
-   ```bash
-   goose -dir migration postgres "$DB_STRING" up
-   ```
+# 3. Launch Server & Client
+go run ./app
+```
 
-3. Run the application:
-   ```bash
-   go run ./app
-   ```
+Client UI & API Explorer: `http://localhost:8080/`

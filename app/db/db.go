@@ -1,33 +1,54 @@
 package db
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"log"
 	"os"
+	"time"
 
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-var DB *sql.DB
+var Pool *pgxpool.Pool
 
-func Connect() (*sql.DB, error) {
+func Connect(ctx context.Context) (*pgxpool.Pool, error) {
 	connStr := os.Getenv("DB_STRING")
 	if connStr == "" {
 		return nil, fmt.Errorf("DB_STRING environment variable is not set")
 	}
 
-	var err error
-	DB, err = sql.Open("postgres", connStr)
+	config, err := pgxpool.ParseConfig(connStr)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open database: %w", err)
+		return nil, fmt.Errorf("failed to parse DB_STRING config: %w", err)
 	}
 
-	if err = DB.Ping(); err != nil {
+	config.MaxConns = 25
+	config.MinConns = 5
+	config.MaxConnLifetime = 1 * time.Hour
+	config.MaxConnIdleTime = 30 * time.Minute
+	config.HealthCheckPeriod = 1 * time.Minute
+
+	pool, err := pgxpool.NewWithConfig(ctx, config)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create connection pool: %w", err)
+	}
+
+	pingCtx, cancel := context.WithTimeout(ctx, 15*time.Second)
+	defer cancel()
+
+	if err := pool.Ping(pingCtx); err != nil {
 		log.Printf("Warning: failed to ping database: %v", err)
-		return DB, err
+		return pool, err
 	}
 
-	log.Println("Database connection established successfully")
-	return DB, nil
+	Pool = pool
+	log.Println("Database connection pool established successfully")
+	return Pool, nil
+}
+
+func Close() {
+	if Pool != nil {
+		Pool.Close()
+	}
 }

@@ -3,37 +3,36 @@ package routes
 import (
 	"encoding/json"
 	"net/http"
+	"os"
+
+	"todo-app/app/middleware"
 )
 
 func SetupRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/health", healthCheckHandler)
-	mux.HandleFunc("/todos", todosHandler)
-}
+	mux.HandleFunc("/users", usersHandler)
+	mux.HandleFunc("/login", loginHandler)
+	mux.HandleFunc("/logout", logoutHandler)
+	mux.HandleFunc("/me", middleware.RequireAuth(meHandler))
+	mux.HandleFunc("/posts", postsHandler)
 
-func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{
-		"status":  "ok",
-		"message": "Todo API is running",
-	})
-}
-
-func todosHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	switch r.Method {
-	case http.MethodGet:
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"todos": []interface{}{},
-		})
-	case http.MethodPost:
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(map[string]string{
-			"message": "Create todo endpoint placeholder",
-		})
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		json.NewEncoder(w).Encode(map[string]string{
-			"error": "Method not allowed",
-		})
+	clientDir := "app/client"
+	if _, err := os.Stat(clientDir); os.IsNotExist(err) {
+		clientDir = "client"
 	}
+	mux.Handle("/", http.FileServer(http.Dir(clientDir)))
+}
+
+func writeJSON(w http.ResponseWriter, status int, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(data)
+}
+
+func writeError(w http.ResponseWriter, status int, message string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(map[string]string{
+		"error": message,
+	})
 }
