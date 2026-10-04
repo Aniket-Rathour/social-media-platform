@@ -23,9 +23,15 @@ func SetupRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/users/following", followingListHandler)
 	mux.HandleFunc("/users/stats", followStatsHandler)
 
-	clientDir := "app/client"
+	clientDir := "app/client/dist"
 	if _, err := os.Stat(clientDir); os.IsNotExist(err) {
-		clientDir = "client"
+		clientDir = "client/dist"
+		if _, err := os.Stat(clientDir); os.IsNotExist(err) {
+			clientDir = "dist"
+			if _, err := os.Stat(clientDir); os.IsNotExist(err) {
+				clientDir = "app/client"
+			}
+		}
 	}
 	mux.Handle("/", http.FileServer(http.Dir(clientDir)))
 }

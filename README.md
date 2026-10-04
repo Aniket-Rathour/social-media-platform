@@ -12,7 +12,7 @@ A high-concurrency, production-grade social backend and client built in Go and P
 - **JWT Device Sessions**: Automatic issuance and revocation of `HttpOnly`, `SameSite=Lax` cookies with HMAC SHA-256 signature verification.
 - **PostgreSQL Connection Pooling (`pgxpool`)**: Scalable pool lifecycle management with automated health checks.
 - **Production Server Hardening**: Configured with strict read, write, idle, and header timeouts.
-- **Interactive Client & Live API Inspector**: Real-time dark mode client with built-in traffic inspection at `http://localhost:8080/`.
+- **Interactive React Client & Live API Inspector**: Modern dark mode SPA built with React 19, Tailwind CSS v4, and Lucide icons at `http://localhost:8080/`.
 
 ---
 
@@ -63,7 +63,8 @@ cp .env.example .env
 # 2. Database Migrations
 goose -dir migration postgres "$DB_STRING" up
 
-# 3. Launch Platform
+# 3. Build React Client & Launch Platform
+cd app/client && npm install && npm run build && cd ../..
 go run ./app
 ```
 
