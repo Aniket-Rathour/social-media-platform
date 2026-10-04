@@ -16,6 +16,13 @@ func SetupRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/me", middleware.RequireAuth(meHandler))
 	mux.HandleFunc("/posts", postsHandler)
 
+	mux.HandleFunc("/users/follow", middleware.RequireAuth(followUserHandler))
+	mux.HandleFunc("/users/unfollow", middleware.RequireAuth(unfollowUserHandler))
+	mux.HandleFunc("/users/remove-follower", middleware.RequireAuth(removeFollowerHandler))
+	mux.HandleFunc("/users/followers", followersListHandler)
+	mux.HandleFunc("/users/following", followingListHandler)
+	mux.HandleFunc("/users/stats", followStatsHandler)
+
 	clientDir := "app/client"
 	if _, err := os.Stat(clientDir); os.IsNotExist(err) {
 		clientDir = "client"

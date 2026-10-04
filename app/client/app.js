@@ -6,6 +6,11 @@ const sessionDetails = document.getElementById('sessionDetails');
 const logoutBtn = document.getElementById('logoutBtn');
 const postsList = document.getElementById('postsList');
 
+const followersCountPill = document.getElementById('followersCountPill');
+const followingCountPill = document.getElementById('followingCountPill');
+const followersList = document.getElementById('followersList');
+const followingList = document.getElementById('followingList');
+
 function logAPI(type, method, url, status, data) {
   const entry = document.createElement('div');
   entry.className = `log-entry log-${type}`;
@@ -105,6 +110,7 @@ async function checkSession() {
       <div class="muted">Cookie session is active and verified by server.</div>
     `;
     logoutBtn.classList.remove('hidden');
+    loadSocialData(data.username);
   } catch (err) {
     currentUser = null;
     sessionBadge.textContent = 'Guest';
@@ -140,6 +146,43 @@ async function loadPosts(userId = null) {
     `).join('');
   } catch (err) {
     postsList.innerHTML = `<p class="muted" style="color: var(--danger)">Failed to load posts: ${escapeHTML(err.message)}</p>`;
+  }
+}
+
+async function loadSocialData(username = '') {
+  const queryParam = username ? `?username=${encodeURIComponent(username)}` : '';
+  try {
+    const statsData = await apiRequest(`/users/stats${queryParam}`);
+    followersCountPill.textContent = `${statsData.stats.followers_count} Followers`;
+    followingCountPill.textContent = `${statsData.stats.following_count} Following`;
+
+    const followersData = await apiRequest(`/users/followers${queryParam}`);
+    const flist = followersData.followers || [];
+    if (flist.length === 0) {
+      followersList.innerHTML = '<p class="muted">No followers found.</p>';
+    } else {
+      followersList.innerHTML = flist.map(u => `
+        <div class="user-pill-item">
+          <strong>@${escapeHTML(u.username)}</strong>
+          <span class="muted">${escapeHTML(u.email)}</span>
+        </div>
+      `).join('');
+    }
+
+    const followingData = await apiRequest(`/users/following${queryParam}`);
+    const fglist = followingData.following || [];
+    if (fglist.length === 0) {
+      followingList.innerHTML = '<p class="muted">Not following anyone yet.</p>';
+    } else {
+      followingList.innerHTML = fglist.map(u => `
+        <div class="user-pill-item">
+          <strong>@${escapeHTML(u.username)}</strong>
+          <span class="muted">${escapeHTML(u.email)}</span>
+        </div>
+      `).join('');
+    }
+  } catch (err) {
+    showToast(err.message, true);
   }
 }
 
@@ -234,6 +277,59 @@ document.getElementById('filterBtn').addEventListener('click', () => {
 document.getElementById('refreshPostsBtn').addEventListener('click', () => {
   document.getElementById('filterUserId').value = '';
   loadPosts();
+});
+
+document.getElementById('followForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const targetUsername = document.getElementById('followUsername').value.trim();
+  try {
+    const data = await apiRequest('/users/follow', {
+      method: 'POST',
+      body: JSON.stringify({ target_username: targetUsername })
+    });
+    showToast(data.message);
+    document.getElementById('followForm').reset();
+    if (currentUser) loadSocialData(currentUser.username);
+  } catch (err) {
+    showToast(err.message, true);
+  }
+});
+
+document.getElementById('unfollowForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const targetUsername = document.getElementById('unfollowUsername').value.trim();
+  try {
+    const data = await apiRequest('/users/unfollow', {
+      method: 'POST',
+      body: JSON.stringify({ target_username: targetUsername })
+    });
+    showToast(data.message);
+    document.getElementById('unfollowForm').reset();
+    if (currentUser) loadSocialData(currentUser.username);
+  } catch (err) {
+    showToast(err.message, true);
+  }
+});
+
+document.getElementById('removeFollowerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const followerUsername = document.getElementById('removeFollowerUsername').value.trim();
+  try {
+    const data = await apiRequest('/users/remove-follower', {
+      method: 'POST',
+      body: JSON.stringify({ follower_username: followerUsername })
+    });
+    showToast(data.message);
+    document.getElementById('removeFollowerForm').reset();
+    if (currentUser) loadSocialData(currentUser.username);
+  } catch (err) {
+    showToast(err.message, true);
+  }
+});
+
+document.getElementById('loadSocialBtn').addEventListener('click', () => {
+  const user = document.getElementById('socialSearchUsername').value.trim();
+  loadSocialData(user);
 });
 
 document.getElementById('clearConsoleBtn').addEventListener('click', () => {

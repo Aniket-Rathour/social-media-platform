@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Production Todo & Posts Client</title>
+  <title>Social Media Platform Client</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,8 +15,8 @@
       <div class="brand">
         <div class="brand-icon">⚡</div>
         <div>
-          <h1>Production Todo API</h1>
-          <p class="subtitle">Go &bull; PostgreSQL &bull; pgxpool &bull; Argon2 &bull; JWT Cookies</p>
+          <h1>Social Media Platform API</h1>
+          <p class="subtitle">Go &bull; PostgreSQL &bull; pgxpool &bull; Argon2id &bull; Social Graph &bull; JWT</p>
         </div>
       </div>
       <div class="topbar-actions">
@@ -29,6 +29,7 @@
     <nav class="nav-tabs">
       <button class="tab-btn active" data-tab="tabAuth">Authentication</button>
       <button class="tab-btn" data-tab="tabPosts">Posts Management</button>
+      <button class="tab-btn" data-tab="tabSocial">Social Graph</button>
       <button class="tab-btn" data-tab="tabConsole">API Inspector</button>
     </nav>
 
@@ -126,6 +127,77 @@
             </div>
             <div id="postsList" class="posts-list">
               <p class="muted">Loading posts...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tabSocial" class="tab-panel">
+        <div class="social-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2>Follow User</h2>
+              <p>Follow another creator by their username.</p>
+            </div>
+            <form id="followForm" class="form-stack">
+              <div class="field">
+                <label for="followUsername">Target Username</label>
+                <input id="followUsername" type="text" placeholder="e.g. john_doe" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Follow</button>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2>Unfollow User</h2>
+              <p>Stop following a creator.</p>
+            </div>
+            <form id="unfollowForm" class="form-stack">
+              <div class="field">
+                <label for="unfollowUsername">Target Username</label>
+                <input id="unfollowUsername" type="text" placeholder="e.g. john_doe" required>
+              </div>
+              <button type="submit" class="btn btn-outline">Unfollow</button>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2>Remove Follower</h2>
+              <p>Remove a user from following your profile.</p>
+            </div>
+            <form id="removeFollowerForm" class="form-stack">
+              <div class="field">
+                <label for="removeFollowerUsername">Follower's Username</label>
+                <input id="removeFollowerUsername" type="text" placeholder="e.g. spammer_user" required>
+              </div>
+              <button type="submit" class="btn btn-outline" style="border-color: var(--danger); color: #fda4af">Remove From Followers</button>
+            </form>
+          </div>
+
+          <div class="card social-stats-card">
+            <div class="card-header">
+              <h2>Followers & Following</h2>
+              <p>Inspect graph relations and statistics.</p>
+            </div>
+            <div class="social-search-bar">
+              <input id="socialSearchUsername" type="text" placeholder="Lookup username (or leave empty for @me)">
+              <button id="loadSocialBtn" class="btn btn-accent btn-sm">Inspect</button>
+            </div>
+            <div id="socialStatsRow" class="stats-pills">
+              <span class="pill" id="followersCountPill">0 Followers</span>
+              <span class="pill" id="followingCountPill">0 Following</span>
+            </div>
+            <div class="social-lists-row">
+              <div class="social-list-col">
+                <h3>Followers</h3>
+                <div id="followersList" class="user-pill-list"><p class="muted">No data loaded.</p></div>
+              </div>
+              <div class="social-list-col">
+                <h3>Following</h3>
+                <div id="followingList" class="user-pill-list"><p class="muted">No data loaded.</p></div>
+              </div>
             </div>
           </div>
         </div>

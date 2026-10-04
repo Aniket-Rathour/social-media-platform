@@ -128,6 +128,7 @@ body {
   margin-bottom: 24px;
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .tab-btn {
@@ -172,6 +173,16 @@ body {
   display: grid;
   grid-template-columns: 360px 1fr;
   gap: 20px;
+}
+
+.social-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.social-stats-card {
+  grid-column: 1 / -1;
 }
 
 @media (max-width: 900px) {
@@ -377,6 +388,70 @@ input:focus, textarea:focus {
   font-size: 14px;
   color: var(--text-muted);
   white-space: pre-wrap;
+}
+
+.social-search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stats-pills {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.pill {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.social-lists-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 700px) {
+  .social-lists-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.social-list-col h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.user-pill-list {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  min-height: 120px;
+  max-height: 250px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-pill-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-surface-elevated);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
 }
 
 .console-header {
